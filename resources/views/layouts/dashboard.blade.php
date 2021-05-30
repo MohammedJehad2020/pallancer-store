@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>PalLancer-Store</title>
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 </head>
 
 <body>
@@ -21,20 +21,26 @@
             <aside class="col-md-3">
                 <h4>Navigation Menu</h4>
                 <nav>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="" class="nav-link">Dashboard</a></li>
-                        <li class="nav-item"><a href="" class="nav-link">Categories</a></li>
-                        <li class="nav-item"><a href="" class="nav-link">Products</a></li>
+                 <!-- use to nav active -->
+                <!--nav-link @if(request()->routeIs('admin.categories.*')) active @endif -->
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item"><a href="{{ route('admin.categories.dashboard') }}" class="nav-link {{ Request::is('admin/categories/dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                        <li class="nav-item"><a href="{{ route('admin.categories.index') }}" class="nav-link {{ Request::is('admin/categories') ? 'active' : '' }}">Categories</a></li>
+                        <li class="nav-item"><a href="{{ route('admin.categories.product') }}" class="nav-link {{ Request::is('admin/categories/product') ? 'active' : '' }}">Products</a></li>
                     </ul>
                 </nav>
             </aside>
             <main class="col-md-9">
                 <div class="mb-4">
                     <h3 class="text-primary">
-                        @yield('title', 'Default Title')
+                        {{ $title ?? 'Default Title' }}
+                        <!-- @yield('title', 'fdfdfdfd') -->
                     </h3>
                 </div>
-                @yield('content')
+
+                <!-- @yield('content') -->
+                {{ $slot }}
+               
             </main>
         </div>
 

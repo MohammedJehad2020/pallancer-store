@@ -1,8 +1,7 @@
-@extends('layouts.dashboard')
 
-@section('title', 'Create Category')
 
-@section('content')
+<x-dashboard-layout title="Add Category">
+
 
 @if (session()->has('success'))
     <div class="alert alert-success">
@@ -17,4 +16,4 @@
         ])
 
 </form>
-@endsection
+</x-dashboard-layout>

@@ -2,17 +2,52 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Rules\CheckAge;
 use App\Models\Category;
+use App\Models\Register;
+use App\Rules\WordsFillter;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Validation\Rules\Unique;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Contracts\Session\Session;
-
+use Illuminate\Support\Facades\Validator;
 
 class CategoriesController extends Controller
 {
+
+    // register function
+    public function register(){
+
+        return view('user.register');
+
+    }
+
+    
+    public function infoStore(Request $request)
+    {
+
+        $this->validateInfoRegister($request);
+
+        $register = new Register();
+        $register->name = $request->name;
+        // $register->slug = Str::slug($request->name);
+        $register->email = $request->input('email');
+        $register->password = $request->post('password'); 
+        $register->gender = $request->gender;
+        $register->birthday = $request->birthday;
+        $register->phone = $request->phone;
+        $register->save();
+
+        return Redirect::route('register')
+            ->with('success', 'Registered Successfully'); // flash message
+    }
+
+
     //function index
     public function index(Request $request)
     {
@@ -30,11 +65,6 @@ class CategoriesController extends Controller
                 'categories.*',
                 'parents.name as parent_name'
             ])->get();
-
-
-
-
-
         // طريقة اخرى
         /*
         $query = Category::query();
@@ -51,10 +81,20 @@ class CategoriesController extends Controller
         */
 
         $parents = Category::orderBy('name', 'asc')->get();
-        return view('admin.categories.index', [
+        return View::make('admin.categories.index', [
             'categories' => $categories,
             'parents' => $parents,
         ]);
+    }
+
+    public function product()
+    {
+        return View::make('admin.categories.product');
+    }
+
+    public function dashboard()
+    {
+        return View::make('admin.categories.dashboard');
     }
 
 
@@ -73,6 +113,8 @@ class CategoriesController extends Controller
 
     public function store(Request $request)
     {
+
+        $this->validateRequest($request);
 
         $category = new Category();
         $category->name = $request->name; // $request->get('name')
@@ -103,7 +145,14 @@ class CategoriesController extends Controller
     public function update(Request $request, $id)
     {
 
+
         $category = Category::find($id);
+        if ($category == null) {
+            abort(404);
+        }
+
+        $this->validateRequest($request, $id);
+
         $category->name = $request->name; // $request->get('name')
         $category->parent_id = $request->post('parent_id');
         $category->slug = Str::slug($request->name);
@@ -133,9 +182,77 @@ class CategoriesController extends Controller
     }
 
     public function show($id)
-{
-    return __METHOD__;
-    return view('admin.categories.show', [
-        'category' => Category::findOrFail($id)
-    ]);
-}}
+    {
+        return __METHOD__;
+        return view('admin.categories.show', [
+            'category' => Category::findOrFail($id)
+        ]);
+    }
+
+    protected function validateRequest(Request $request, $id = 0)
+    {
+        return $request->validate(
+            [ // rules
+            'name' => [
+                'required',
+                'alpha',
+                'max:255',
+                'min:3',
+                //"unique:categories,name,$id",
+                //(new Unique('categories', 'name'))->ignore($id),
+                Rule::unique('categories', 'name')->ignore($id),
+            ],
+            'description' => [
+                'nullable',
+                'min:5',
+                /* function($attribut, $value, $fail){
+                     if(stripos($value, 'laravl') !== false){
+                         $fail('You an not use the word "laravl"!');
+                     }
+                }*/
+                // new WordsFillter(['php', 'laravel']),
+                'filter:laravel,php'
+            ],
+            'parent_id' => [
+                'nullable',
+                'exists:categories,id'
+            ],
+            'image' => [
+                'nullable',
+                'image',
+                'max:1048576',
+                'dimentions:min_width=200,min_height=200'
+            ],
+            'status' => 'required|in:active,inactive'
+        ],
+        [ /// error messages
+           'name.required' => 'هذا الحقل مطلوب'
+        ],
+    );
+    }
+
+    protected function validateInfoRegister(Request $request){
+        return $request->validate(
+            [
+                'name' => 'required|max:255|min:3',
+                'email' =>'required|unique:register,email|email',
+                'password' => [
+                    'required',
+                      'min:8',
+                    ],
+                'gender' => 'required|in:male,female',
+                 'birthday' => [
+                     'required',
+                      new CheckAge(),
+                    ],
+                // 'phone' => 'required|regix:/^(00972|0|\\+972|0|)[2][0-9]{7})|digits:10',
+                
+            ],
+            [
+              'name.required' => 'هذا الحقل مطلوب',
+              'email.required' => 'هذا الحقل مطلوب',
+              'email.unique'=> 'الايميل غير صالح', 
+            ],
+        );
+    }
+}

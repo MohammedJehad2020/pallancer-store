@@ -1,22 +1,26 @@
-@extends('layouts.dashboard')
 
-@section('title', 'Categories List')
+<x-dashboard-layout title="Categories">
 
-@section('content')
+<x-alert title="Message Title" type="success"> 
+    <x-slot name="actions">
+        <a href="#" class="btn btn-danger">Action button</a>
+    </x-slot> 
+     My message body 
+</x-alert>
 
 <div class="table-toolbar mb-3">
-  <a href="{{ route('admin.categories.create') }}" class="btn btn-info">Create</a>
+    <a href="{{ route('admin.categories.create') }}" class="btn btn-info">Create</a>
 </div>
 
-
+<!-- 
 @if (session()->has('success'))
 <div class="alert alert-success">
     {{ session()->get('success') }}
 </div>
-@endif
+@endif -->
 
 <!-- form for filter data -->
-<form action="{{ route('admin.categories.index') }}" method="get" class="d-flex mb-">
+<form action="{{ URL::current() }}" method="get" class="d-flex mb-">
     <input name="name" type="text" class="form-control me-2" placeholder="Search by name">
     <select name="parent_id" class="form-control me-2">
         <option value="">All Categories</option>
@@ -59,4 +63,4 @@
     </tbody>
 </table>
 
-@endsection
+</x-dashboard-layout>
