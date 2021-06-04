@@ -53,18 +53,20 @@ class CategoriesController extends Controller
     {
         $categories = Category::when($request->name, function ($query, $value) {
             $query->where(function ($query) use ($value) {
-                $query->where('name', 'LIKE', "%{$value}%")
-                    ->orWhere('description', 'LIKE', "%{$value}%");
+                $query->where('categories.name', 'LIKE', "%{$value}%")
+                    ->orWhere('categories.description', 'LIKE', "%{$value}%");
             });
         })
             ->when($request->parent_id, function ($query, $value) {
-                $query->where('parent_id', '=', $value);
-            })
+                $query->where('categories.parent_id', '=', $value);
+            })/*
             ->leftJoin('categories as parents', 'parents.id', '=', 'categories.parent_id')
             ->select([
                 'categories.*',
                 'parents.name as parent_name'
-            ])->get();
+            ])*/
+            ->with('parent')
+            ->get();
         // طريقة اخرى
         /*
         $query = Category::query();
@@ -245,7 +247,7 @@ class CategoriesController extends Controller
                      'required',
                       new CheckAge(),
                     ],
-                // 'phone' => 'required|regix:/^(00972|0|\\+972|0|)[2][0-9]{7})|digits:10',
+                 'phone' => 'required|regix:/^(059|056)\-?([0-9]{7})$/',
                 
             ],
             [

@@ -37,7 +37,7 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Parent ID</th>
+            <th>Parent Name</th>
             <th>Created At</th>
             <th>Status</th>
             <th></th>
@@ -48,7 +48,7 @@
         <tr>
             <td>{{ $category->id }}</td>
             <td><a href="{{ route('admin.categories.edit', $category->id) }}"><?= $category->name ?></a></td>
-            <td>{{ $category->parent_name }}</td>
+            <td>{{ $category->parent->name }}</td>
             <td>{{ $category->created_at }}</td>
             <td>{{ $category->status }}</td>
             <td>
