@@ -233,6 +233,20 @@ class CategoriesController extends Controller
     );
     }
 
+    public function storeProduct(Request $request, $id){
+        $category = Category::findOrFail($id);
+
+        $product = $category->products()->create([
+            'name' => 'Product Name',
+            'price' => 10,
+        ]);
+
+        //$product->category()->associate($category);
+        // $product->save();
+        //$product->category()->dissociate();
+        // $product->save();
+    }
+
     protected function validateInfoRegister(Request $request){
         return $request->validate(
             [

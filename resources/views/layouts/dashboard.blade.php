@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PalLancer-Store</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    @stack('css')
 </head>
 
 <body>
@@ -21,8 +22,8 @@
             <aside class="col-md-3">
                 <h4>Navigation Menu</h4>
                 <nav>
-                 <!-- use to nav active -->
-                <!--nav-link @if(request()->routeIs('admin.categories.*')) active @endif -->
+                    <!-- use to nav active -->
+                    <!--nav-link @if(request()->routeIs('admin.categories.*')) active @endif -->
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item"><a href="{{ route('admin.categories.dashboard') }}" class="nav-link {{ Request::is('admin/categories/dashboard') ? 'active' : '' }}">Dashboard</a></li>
                         <li class="nav-item"><a href="{{ route('admin.categories.index') }}" class="nav-link {{ Request::is('admin/categories') ? 'active' : '' }}">Categories</a></li>
@@ -40,12 +41,12 @@
 
                 <!-- @yield('content') -->
                 {{ $slot }}
-               
+
             </main>
         </div>
-
     </div>
-
+    <script src="{{ asset('js/bootstrap.bundle.min.js')}}"></script>
+    @stack('js')
 </body>
 
 </html>

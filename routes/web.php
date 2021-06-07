@@ -20,7 +20,7 @@ use App\Models\Category;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('front.index');
 });
 
 // route fore registration page

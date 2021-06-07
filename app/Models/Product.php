@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     use HasFactory;
+
+    protected $touches = ['category'];// اذا حدث اي تغيير في جدول المنتج يتم تغيير حقل اخر تحديث في جدول الفئات
 
     protected $perPage = 5;
 
@@ -22,7 +27,7 @@ class Product extends Model
     ];*/
 
     public function category(){
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'category_id', 'id')->withDefault();
     }
 
     public function store(){
@@ -40,6 +45,24 @@ class Product extends Model
             'id',
         );
     }
+
+//  Accessor:
+// get{AttrName}Attribute
+// $product->image_url
+   public function getImageUrlAttribute(){
+       if($this->image){
+           return asset('storage/' . $this->image);
+           return Storage::disk('storage')->url($this->image);
+       }
+       return asset('images/default-image.jpg');
+   }
+
+// Mutators
+   public function setNameAttribute($value){
+       $this->attributes['name'] = Str::title($value);
+   }
+
+
 //  function for validate rule
     public static function validateRules(){
         return [
@@ -57,4 +80,5 @@ class Product extends Model
 
         ];
     }
+    
 }

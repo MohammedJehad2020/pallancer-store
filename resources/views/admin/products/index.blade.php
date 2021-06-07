@@ -33,9 +33,8 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Category Name</th>
+            <th>Category</th>
             <th>Price</th>
-            <th>Sale Price</th>
             <th>Quantity</th>
             <th>Status</th>
             <th>Created At</th>           
@@ -47,9 +46,9 @@
             <td>{{ $product->id }}</td>
             <td><a href="{{ route('admin.products.edit', $product->id) }}"><?= $product->name ?></a>
         </td>
+
             <td>{{ $product->category->name }}</td>
             <td>{{ $product->price }}</td>
-            <td>{{ $product->sale_price }}</td>
             <td>{{ $product->quantity }}</td>
             <td>{{ $product->status }}</td>
             <td>{{ $product->created_at }}</td>
@@ -67,4 +66,6 @@
 
 {{ $products->links('vendor.pagination.bootstrap-4') }}
 
-</x-dashboard-layout>
+</x-dashboard-layout>  
+
+
