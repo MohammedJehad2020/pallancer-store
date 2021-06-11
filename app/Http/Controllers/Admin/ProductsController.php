@@ -37,7 +37,7 @@ class ProductsController extends Controller
         return view('admin.products.create', [
             'product' => new Product(),
             'categories' => Category::all(),
-            'tag' => '',
+            'tags' => '',
         ]);
     }
 
@@ -135,18 +135,30 @@ class ProductsController extends Controller
             // $file->getSize();
             // $file->getMimeType();
             $data['image'] = $file->storeAs('/images', $file->getclientOriginalName(), [
-                'disk' => 'public'
+                'disk' => 'uploads'
             ]);
             $previous = $product->image;
         }
 
         $product->update($data); // save for update
         if ($previous) {
-            Storage::disk('storage')->delete($previous);
+            Storage::disk('uploads')->delete($previous);
         }
         // $product->fill($request->all())->save();   //طريقة اخرى لعمل ميثود التحديث
 
         $product->tags()->sync($this->getTags($request));//  بتعمل عملية الربط بين التاق والمنتجات و حذف اي تاق غير مرتبطين مع منتجات في الجدول الوسيط
+
+        //  Gallery
+        if($request->hasFile('gallery')){
+            foreach ( $request->file('gallery') as $file ){
+                $image_path = $file->store('/images', [
+                    'disk' => 'uploads'
+                ]);
+               $product->images()->create([
+                  'image_path' => $image_path,
+               ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', "Product ($product->name) updated!");
@@ -177,7 +189,7 @@ class ProductsController extends Controller
         $tags = $request->post('tags');
         $tags = json_decode($tags);// حول الجيسون الى اوبجكت داخل اري
         //DB::table('product_tag')->where('product_id', '=', $product->id)->delete();//حذف كل التاق المرتبطة بهذا المنتج
-        if (count($tags) > 0) {
+        if ( is_array($tags) && count($tags) > 0) {
             foreach ($tags as $tag) {
                 $tag_name = $tag->value; // بترجع القيم التي تم ادخالها في حقل التاق
                 $tag_Model = Tag::firstOrCreate([ // فحص القيم التي تم ادخالها مع القيم المخزنة في جدول التاق اذا مش موجودة يتم انشائها

@@ -14,7 +14,20 @@
 
     <header class="py-2 bg-dark text-white mb-4">
         <div class="class container">
-            <h1 class="h3">{{ config('app.name') }}</h1>
+            <div class="d-flex">
+                <h1 class="h3">{{ config('app.name') }}</h1>
+
+               {{-- @if(Auth::check()) --}}
+               @auth
+                <div class="ms-auto">
+                    Hi, {{ Auth::user()->name}}
+                    <a href="#" onclick="document.getElementById('logout').submit()">Logout</a>
+                    <form id="logout" class="d-none" action="{{ route('logout') }}" method="post">
+                        @csrf
+                    </form>
+                </div>
+                @endauth
+            </div>
         </div>
     </header>
     <div class="class container">

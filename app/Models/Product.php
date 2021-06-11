@@ -34,6 +34,11 @@ class Product extends Model
         return $this->belongsTo(Store::class, 'store_id', 'id');
     }
 
+    // product has many images 
+    public function images(){
+        return $this->hasMany(ProductImage::class, 'product_id', 'id');
+    }
+
     //relation many to many
     public function tags(){
         return $this->belongsToMany(
@@ -51,8 +56,11 @@ class Product extends Model
 // $product->image_url
    public function getImageUrlAttribute(){
        if($this->image){
-           return asset('storage/' . $this->image);
-           return Storage::disk('storage')->url($this->image);
+           if(strpos($this->image, 'http') === 0){ // اذا كانت الصورة عبارة عن رابط يقوم بتحميلها
+               return $this->image;
+           }
+        //    return asset('uploads/' . $this->image);
+           return Storage::disk('uploads')->url($this->image);
        }
        return asset('images/default-image.jpg');
    }

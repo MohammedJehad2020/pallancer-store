@@ -39,6 +39,22 @@
 </div>
 
 <div class="form-group mb-3">
+    <label for="">Gallery:</label>
+    <div class="row">
+        @foreach ($product->images as $image)
+        <div class="col-md-2">
+            <img src="{{ $image->image_url }}" height="80" class="d-block img-fit m-1 border p-1">
+            <button class="btn btn-sm btn-danger" onclick="deleteImage('{{ $image->id }}')">Delete</button>
+        </div>
+        @endforeach
+    </div>
+    <input type="file" name="gallery[]" multiple class="form-control @error('gallery') is-invalid @enderror">
+    @error('gallery')
+    <p class="invalid-feedback">{{ $message }}</p>
+    @enderror
+</div>
+
+<div class="form-group mb-3">
     <label for="">Price:</label>
     <input type="number" name="price" value="{{ old('price', $product->price) }}" class="form-control @error('price') is-invalid @enderror">
     @error('price')

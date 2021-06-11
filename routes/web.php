@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\UserController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Middleware\CheckUserType;
 use App\Models\Category;
 
 
@@ -19,18 +21,25 @@ use App\Models\Category;
 |
 */
 
-Route::get('/', function () {
-    return view('front.index');
-});
+Route::get('/', [HomeController::class, 'index']);
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__.'/auth.php';
+
+
 
 // route fore registration page
-Route::get('/register', [CategoriesController::class, 'register'])->name('register');
+// Route::get('/register', [CategoriesController::class, 'register'])->name('register');
 Route::post('/', [CategoriesController::class, 'infoStore'])->name('infoStore');
 
 
 Route::namespace('Admin')
     ->prefix('admin')
     ->as('admin.')
+    ->middleware('auth', 'user.type')
     ->group(function () {
 
         Route::group([
